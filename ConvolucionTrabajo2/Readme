@@ -1,0 +1,36 @@
+
+INSTALACION
+
+EdgeDetection_CPU  (Instalacion Utilizando CPU - 8cores - CoreI7)
+
+Visual Studio 2013
+Lenguaje C++
+OpenCV 2.413
+OpenMP
+
+EdgeDetection_GPU  (Instalaccion Utilizando GPU)
+
+Visual Studio 2013
+Lenguaje C++
+OpenCV 2.413
+Cuda 7.5
+
+OUTPUT
+
+La solucion tanto en el proyecto GPU como el de CPU, resuelve por convolucion, la deteccion de bordes de una imagen y el GaussianBlur (Desenfoque Gaussiano)
+
+TIEMPO DE EJECUCCION
+
+IMAGEN 512X512
+CPU -> USO DE 8 CORES  -> 29 milisegundos
+GPU -> CUDA -> 16.9 milisegundos
+
+IMAGEN 1920X1080
+CPU -> USO DE 8 CORES  -> 224 milisegundos
+GPU -> CUDA -> 161 milisegundos
+
+IMAGENES DE PRUEBA
+
+lenna.jpg -> 512x512pixels
+
+scarlett.jpg -> 1920x1080pixels
