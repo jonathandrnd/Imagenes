@@ -1,0 +1,20 @@
+﻿Build started 8/12/2016 10:10:53 p. m..
+     1>Project "C:\Users\Lenovo\documents\visual studio 2013\Projects\HandDetectionOpenCV\HandDetectionOpenCV\HandDetectionOpenCV.vcxproj" on node 2 (Rebuild target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\Users\Lenovo\Downloads\opencv\build\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _CRT_SECURE_NO_WARNINGS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"Debug\HandDetectionOpenCV.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt stdafx.cpp
+         stdafx.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\Users\Lenovo\Downloads\opencv\build\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _CRT_SECURE_NO_WARNINGS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\HandDetectionOpenCV.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt HandDetectionOpenCV.cpp
+         HandDetectionOpenCV.cpp
+     1>c:\users\lenovo\documents\visual studio 2013\projects\handdetectionopencv\handdetectionopencv\handdetectionopencv.cpp(55): warning C4101: 'e' : unreferenced local variable
+     1>c:\users\lenovo\documents\visual studio 2013\projects\handdetectionopencv\handdetectionopencv\handdetectionopencv.cpp(193): warning C4101: 'e' : unreferenced local variable
+     1>c:\users\lenovo\documents\visual studio 2013\projects\handdetectionopencv\handdetectionopencv\handdetectionopencv.cpp(253): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\lenovo\documents\visual studio 2013\projects\handdetectionopencv\handdetectionopencv\handdetectionopencv.cpp(254): warning C4018: '>' : signed/unsigned mismatch
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Lenovo\documents\visual studio 2013\Projects\HandDetectionOpenCV\Debug\HandDetectionOpenCV.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\Users\Lenovo\Downloads\opencv\build\x86\vc12\lib opencv_calib3d2413d.lib opencv_contrib2413d.lib opencv_core2413d.lib opencv_features2d2413d.lib opencv_flann2413d.lib opencv_gpu2413d.lib opencv_highgui2413d.lib opencv_imgproc2413d.lib opencv_legacy2413d.lib opencv_ml2413d.lib opencv_nonfree2413d.lib opencv_objdetect2413d.lib opencv_ocl2413d.lib opencv_photo2413d.lib opencv_stitching2413d.lib opencv_superres2413d.lib opencv_ts2413d.lib opencv_video2413d.lib opencv_videostab2413d.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Lenovo\documents\visual studio 2013\Projects\HandDetectionOpenCV\Debug\HandDetectionOpenCV.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Lenovo\documents\visual studio 2013\Projects\HandDetectionOpenCV\Debug\HandDetectionOpenCV.lib" /MACHINE:X86 Debug\HandDetectionOpenCV.obj
+         Debug\stdafx.obj
+         HandDetectionOpenCV.vcxproj -> C:\Users\Lenovo\documents\visual studio 2013\Projects\HandDetectionOpenCV\Debug\HandDetectionOpenCV.exe
+     1>Done Building Project "C:\Users\Lenovo\documents\visual studio 2013\Projects\HandDetectionOpenCV\HandDetectionOpenCV\HandDetectionOpenCV.vcxproj" (Rebuild target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:01.71
