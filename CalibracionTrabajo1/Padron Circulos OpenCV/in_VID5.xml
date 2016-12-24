@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<opencv_storage>
+<Settings>
+  <!-- numero de esquinas interiores para cada elemento de las filas y las columnas. (Cuadrado, circulo) -->
+  <BoardSize_Width>4</BoardSize_Width>
+  <BoardSize_Height>11</BoardSize_Height>
+  
+  <!-- El tamaño de un cuadrado en algun sistema metrico definido por el usario (pixel, milimetros)-->
+  <Square_Size>15</Square_Size>
+  
+  <!-- El tipo de entrada usada para la calibracion de la camara. Uno de: CHESSBOARD CIRCLES_GRID ASYMMETRIC_CIRCLES_GRID -->
+  <Calibrate_Pattern>"ASYMMETRIC_CIRCLES_GRID"</Calibrate_Pattern>
+  
+  
+  <Input>"PadronCirculos_03.avi"</Input>
+  
+  <!-- Tiempo de retraso enre cada frame en el caso de la camara. -->
+  <Input_Delay>1</Input_Delay>	
+  
+  <Calibrate_NrOfFrameToUse>25</Calibrate_NrOfFrameToUse>
+ 
+</Settings>
+</opencv_storage>
