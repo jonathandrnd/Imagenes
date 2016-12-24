@@ -34,5 +34,7 @@ Equipo Victor.
 Integrantes
 
 *Jonathan Durand
+
 *Victor Cornejo
+
 *Javier Neira
