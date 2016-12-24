@@ -32,8 +32,7 @@ Instalacion
 Equipo Victor.
 ----------------------------------------------------------------
 Integrantes
-Jonathan Durand
 
-Victor Cornejo
-
-Javier Neira
+*Jonathan Durand
+*Victor Cornejo
+*Javier Neira
