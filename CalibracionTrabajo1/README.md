@@ -38,3 +38,19 @@ Integrantes
 *Victor Cornejo
 
 *Javier Neira
+
+
+----------------------------------------------------------------
+MEJORA, RESPECTO A LO ENVIADO EL 22 DE DICIEMBRE
+----------------------------------------------------------------
+Tanto en el padron de circulo y padron de anillos obtenemos robustamente el padron  y el zigzag en el padron de anillos.
+Para el caso del padron de circulos el zigzag presentaba muchos errores
+
+La mejora esta en el zigzag del padron de circulos, ahora se obtiene de manera mas robusta.
+El cambio consiste en obtener el punto superior izquierda, el cual se obtiene por medio del convex hull ya que este forma un angulo cercano a 90 grados.
+Luego a partir de el trazaremos una diagonal de tamaño 8 en total son 9 diagonales de tamaños (8,8,7,6,5,4,3,2,1).
+ver "dibujo_prueba_diagonal1"
+
+Luego de obtener las diagonales los ordenamos de abajo hacia arriba mediante producto vectorial
+y lo transformamos para que el zigzag sea en vertical. 
+El metodo no es robusto con el video 3.
