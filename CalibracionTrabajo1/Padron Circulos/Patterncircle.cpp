@@ -90,7 +90,7 @@ int bfs(int pos, double dis, vector<nodo>&aux){
 
 int main(){
 	// colocar PadronCirculos_01.avi , PadronCirculos_02.avi , PadronCirculos_03.avi que son los nombres de los videos
-	VideoCapture inputCapture("PadronCirculos_02.avi");
+	VideoCapture inputCapture("PadronCirculos_01.avi");
 	setNumThreads(8);
 	/*    ---------------------------------------------------- 1ERA PARTE  ---------------------------------------------*/
 	//1ERA PARTE del trabajo corresponde en obtener el tablero de anillos (total 30) sin ruidos
@@ -139,7 +139,7 @@ int main(){
 
 				float f1 = box.size.height;
 				float f2 = box.size.width;
-				// si el largo y el ancho difieren minimamente en tamaño y el area no es tan grande sera considerado
+				// si el largo y el ancho difieren minimamente en tamaÃ±o y el area no es tan grande sera considerado
 				// como posible contorno
 				if (fabs(f2 - f1) <= 12 && f1*f2 <= 1500){
 					Point2f centro = box.center;
@@ -152,8 +152,8 @@ int main(){
 		v = limpiar(v);
 
 		// Tenemos los centros de varios contornos y debemos quedarnos con los 44 del patron
-		// La observacion esta en que la distancia entre cada centro del patron es pequeña
-		// Por lo tanto dado una distancia debemos encontrar el tamaño maximo de las componentes conexas formadas (este debe ser 44)
+		// La observacion esta en que la distancia entre cada centro del patron es pequeÃ±a
+		// Por lo tanto dado una distancia debemos encontrar el tamaÃ±o maximo de las componentes conexas formadas (este debe ser 44)
 		// Si una distancia es pequenha entonces la componente tendra tamanho 1 si es muy grande el tamanho sera el total de nodos.
 		// Por lo tanto aplicamos binary search para encontrar la minima distancia de tal modo que la componente conexa mas grande sea 44 - tablero
 		double lo = 1; double hi = 2000;
@@ -239,50 +239,62 @@ int main(){
 		// Despues debemos encontrar los 8 segmentos paralelos
 		if (nododir.size() != 2)continue;
 		double arcotan = -1;
+		int mindx = 1 << 20; int mindy = 1 << 20;
+
 		if (nododir[0].cx < nododir[1].cx){
 			arcotan = atan((nododir[1].cy - nododir[0].cy) / (0.0 + nododir[1].cx - nododir[0].cx));
+			mindx = nododir[0].cx;
+			mindy = nododir[0].cy;
 		}
 		else{
 			arcotan = atan((nododir[0].cy - nododir[1].cy) / (0.0 + nododir[0].cx - nododir[1].cx));
+			mindx = nododir[1].cx;
+			mindy = nododir[1].cy;
 		}
 
+		int sizetam[] = { 8, 8, 7, 6, 5, 4, 3, 2, 1 };
 
 		vector<vector<nodo> >vnodo;
-		for (int caso = 0; caso < 8; caso++){
-			int maxipoints = 0;
-			vector<pair<int, int> >puntos4;
+		for (int caso = 0; caso < 7; caso++){
+			vector<pair<double, int> >puntos4;
+			double mindis = 1 << 30;
 			for (int i = 0; i < v.size(); i++){
 				if (v[i].visit != 0)continue;
+				if (caso == 0)
+					if (v[i].cx != mindx || v[i].cy != mindy)continue;
+
 				for (int j = 0; j < v.size(); j++){
 					if (v[j].visit != 0)continue;
 					// si la recta tiene una pendiente cercana a lo buscado
-					if (i != j && v[i].cx < v[j].cx &&  abs(atan((v[j].cy - v[i].cy + 0.0) / (v[j].cx - v[i].cx)) - arcotan) < 0.05){
-						int cant = 2;
-						vector<pair<int, int> >dis;
+					if (i != j && v[i].cx < v[j].cx){
+
+						vector<pair<double, int> >dis;
 						for (int k = 0; k < v.size(); k++){
 							if (v[k].visit != 0)continue;
 							if (k == i || k == j)continue;
-							if (min(v[i].cx, v[j].cx) <= v[k].cx &&  v[k].cx <= max(v[i].cx, v[j].cx) &&
-								min(v[i].cy, v[j].cy) <= v[k].cy &&  v[k].cy <= max(v[i].cy, v[j].cy)){
-								double aux = area(make_pair(v[i].cx, v[i].cy), make_pair(v[j].cx, v[j].cy), make_pair(v[k].cx, v[k].cy)) / hypot(v[i].cx - v[j].cx, v[i].cy - v[j].cy);
-								// si los puntos son colineales
-								if (aux <= 4)
-									dis.push_back(make_pair(v[k].cx, k));
-							}
+							double aux = area(make_pair(v[i].cx, v[i].cy), make_pair(v[j].cx, v[j].cy), make_pair(v[k].cx, v[k].cy)) / hypot(v[i].cx - v[j].cx, v[i].cy - v[j].cy);
+							aux = abs(aux);
+							// si los puntos son colineales
+							dis.push_back(make_pair(aux, k));
 						}
 
-						cant += dis.size();
-						if (maxipoints < cant){
-							maxipoints = cant;
+						sort(dis.begin(), dis.end());
+						double sum = 0;
+						for (int k = 0; k + 2 < sizetam[caso]; k++)
+							sum += dis[k].first;
+
+						if (mindis > sum){
+							mindis = sum;
 							puntos4.clear();
 							puntos4.push_back(make_pair(v[i].cx, i));
 							puntos4.push_back(make_pair(v[j].cx, j));
-							for (int k = 0; k < dis.size(); k++)
-								puntos4.push_back(dis[k]);
+							for (int k = 0; k + 2 < sizetam[caso]; k++)
+								puntos4.push_back(make_pair(v[dis[k].second].cx, dis[k].second));
 						}
 
 					}
 				}
+
 			}
 
 			vector<nodo>aux;
@@ -297,40 +309,92 @@ int main(){
 				vnodo.push_back(aux);
 		}
 
+		// hay 3 puntos faltantes, considerar la diagonal de tamanho 2 la que tenga la menor distancia
+		double mindiag = 1 << 30;
+		vector<nodo>aux2;
+		int pid1 = -1, pid2 = -1;
+
+		for (int i = 0; i < v.size(); i++)
+			if (v[i].visit == 0)
+				for (int j = 0; j < v.size(); j++)
+					if (v[j].visit == 0 && v[i].cx<v[j].cx){
+						if (hypot(v[i].cx - v[j].cx, v[i].cy - v[j].cy) < mindiag){
+							mindiag = hypot(v[i].cx - v[j].cx, v[i].cy - v[j].cy);
+							pid1 = i; pid2 = j;
+						}
+					}
+
+		v[pid1].visit = 1;
+		v[pid2].visit = 1;
+		aux2.push_back(v[pid1]);
+		aux2.push_back(v[pid2]);
+		vnodo.push_back(aux2);
+
+		// el ultimo punto no es considerado
+		aux2.clear();
+		for (int i = 0; i < v.size(); i++)
+			if (v[i].visit == 0)
+				aux2.push_back(v[i]);
+		if (aux2.size() > 0)
+			vnodo.push_back(aux2);
+
+		/*  En este codigo comentado podemos visualizar los 9 segmentos diagonales de tamanho 8 ,8,7,6,5,4,3,2,1
+		for (int i = 0; i < vnodo.size(); i++)
+		for (int j = 0; j < vnodo[i].size(); j++){
+		if (i % 9 == 0)
+		circle(original, Point(vnodo[i][j].cx, vnodo[i][j].cy), 8, Scalar(255, 0, 0), 1, 8, 0);
+		if (i % 9 == 1)
+		circle(original, Point(vnodo[i][j].cx, vnodo[i][j].cy), 5, Scalar(0, 255, 0), 1, 8, 0);
+		if (i % 9 == 2)
+		circle(original, Point(vnodo[i][j].cx, vnodo[i][j].cy), 5, Scalar(0, 0, 255), 1, 8, 0);
+		if (i % 9 == 3)
+		circle(original, Point(vnodo[i][j].cx, vnodo[i][j].cy), 5, Scalar(255, 255, 255), 1, 8, 0);
+		if (i % 9 == 4)
+		circle(original, Point(vnodo[i][j].cx, vnodo[i][j].cy), 5, Scalar(255, 255, 0), 1, 8, 0);
+		if (i % 9 == 5)
+		circle(original, Point(vnodo[i][j].cx, vnodo[i][j].cy), 5, Scalar(0, 255, 255), 1, 8, 0);
+		if (i % 9 == 6)
+		circle(original, Point(vnodo[i][j].cx, vnodo[i][j].cy), 5, Scalar(255,0, 255), 1, 8, 0);
+		if (i % 9 == 7)
+		circle(original, Point(vnodo[i][j].cx, vnodo[i][j].cy), 5, Scalar(15, 15, 15), 1, 8, 0);
+		if (i % 9 == 8)
+		circle(original, Point(vnodo[i][j].cx, vnodo[i][j].cy), 5, Scalar(200, 120,200), 1, 8, 0);
+		}
+		*/
+
 		// ordenamos los segmentos de abajo hacia arriba mediante el producto vectorial
 		for (int i = 0; i < vnodo.size(); i++){
 			for (int j = i + 1; j < vnodo.size(); j++){
 				pair<int, int>vectora = make_pair(vnodo[i][vnodo[i].size() - 1].cx - vnodo[i][0].cx, vnodo[i][vnodo[i].size() - 1].cy - vnodo[i][0].cy);
 				pair<int, int>vectorb = make_pair(vnodo[j][vnodo[j].size() - 1].cx - vnodo[i][0].cx, vnodo[j][vnodo[j].size() - 1].cy - vnodo[i][0].cy);
-				if (vectora.first*vectorb.second - vectora.second*vectorb.first <= 0){
+				if (vectora.first*vectorb.second - vectora.second*vectorb.first >= 0){
 					swap(vnodo[i], vnodo[j]);
 				}
 			}
 		}
 
-		vector<nodo>auxv;
-
-		if (vnodo.size() == 8)
-			for (int i = 0; i < 8; i++){
-				for (int j = 0; j < vnodo[i].size(); j++){
-					pointBuf.push_back(Point2f(vnodo[i][j].cx, vnodo[i][j].cy));
+		// hay 9 segmentos que corresponden a 9 diagonales de tamanho 8 , 8 , 7 ,6 ,5,4,3,2,1
+		// los cuales estan ordenados de arriba hacia abajo por producto vectorial
+		// lo que deseamos es tener 11 verticales de tamanho 4, por lo que realizamos el siguiente procedimiento
+		// obtener el menor x de cada segmento de abajo hacia arriba 1 por cada uno hasta llegar a 4. marcarlo como visitado
+		if (vnodo.size() == 9){
+			bool visited2[9][100];
+			memset(visited2, 0, sizeof(visited2));
+			for (int caso = 0; caso < 11; caso++){
+				int count = 0;
+				for (int i = 0; i < 9 && count<4; i++){
+					for (int j = 0; j < vnodo[i].size() && count<4; j++){
+						if (!visited2[i][j]){
+							pointBuf.push_back(Point2f(vnodo[i][j].cx, vnodo[i][j].cy));
+							count++;
+							visited2[i][j] = 1;
+							break;
+						}
+					}
 				}
 			}
+		}
 
-		/*   // ordenamiento por X o Y --- otro metodo de ordenamiento
-		pointBuf = originalPoints;
-		for (int i = 0; i < pointBuf.size(); i++)
-			for (int j = i + 1; j < pointBuf.size(); j++)
-				if (pointBuf[i].x>pointBuf[j].x){
-					swap(pointBuf[i].x, pointBuf[j].x);
-					swap(pointBuf[i].y, pointBuf[j].y);
-				}
-				else{
-					if (pointBuf[i].x == pointBuf[j].x && pointBuf[i].y > pointBuf[j].y)
-						swap(pointBuf[i].y, pointBuf[j].y);
-				}
-		*/
-	
 		if (pointBuf.size() == 44){
 			drawChessboardCorners(original, boardSize, Mat(pointBuf), 1);
 		}
@@ -344,3 +408,4 @@ int main(){
 	return 0;
 }
 
+s
