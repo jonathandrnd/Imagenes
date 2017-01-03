@@ -5,13 +5,17 @@
   <BoardSize_Width>4</BoardSize_Width>
   <BoardSize_Height>11</BoardSize_Height>
   
-  <!-- El tamaño de un cuadrado en algun sistema metrico definido por el usario (pixel, milimetros)-->
+  <!-- El tamaÃ±o de un cuadrado en algun sistema metrico definido por el usario (pixel, milimetros)-->
   <Square_Size>15</Square_Size>
   
   <!-- El tipo de entrada usada para la calibracion de la camara. Uno de: CHESSBOARD CIRCLES_GRID ASYMMETRIC_CIRCLES_GRID -->
   <Calibrate_Pattern>"ASYMMETRIC_CIRCLES_GRID"</Calibrate_Pattern>
   
-  
+  <!-- The input to use for calibration. 
+		To use an input camera -> escribe como entrada  "1"
+		To use an input video  -> escribe como entrada el nombre del archivo ejm "PadronCirculos.avi"
+		To use an image list   -> escribe como entrada el nombre del xml que contiene las imagenes ejm "VID5.xml"
+		-->
   <Input>"PadronCirculos_03.avi"</Input>
   
   <!-- Tiempo de retraso enre cada frame en el caso de la camara. -->
