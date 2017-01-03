@@ -11,10 +11,10 @@
   <!-- El tipo de entrada usada para la calibracion de la camara. Uno de: CHESSBOARD CIRCLES_GRID ASYMMETRIC_CIRCLES_GRID -->
   <Calibrate_Pattern>"ASYMMETRIC_CIRCLES_GRID"</Calibrate_Pattern>
   
-  <!-- The input to use for calibration. 
-		To use an input camera -> escribe como entrada  "1"
-		To use an input video  -> escribe como entrada el nombre del archivo ejm "PadronCirculos.avi"
-		To use an image list   -> escribe como entrada el nombre del xml que contiene las imagenes ejm "VID5.xml"
+  <!-- Tipo de entrada 
+		Webcam -> escribe como entrada  "1"
+		Archivo de video  -> escribe como entrada el nombre del archivo ejm "PadronCirculos_01.avi"
+		Lista de imagenes   -> escribe como entrada el nombre del xml que contiene las imagenes ejm "VID5.xml"
 		-->
   <Input>"PadronCirculos_03.avi"</Input>
   
