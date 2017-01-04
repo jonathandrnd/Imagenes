@@ -91,7 +91,7 @@ int bfs(int pos, double dis, vector<nodo>&aux){
 
 int main(){
 	// colocar PadronCirculos_01.avi , PadronCirculos_02.avi , PadronCirculos_03.avi que son los nombres de los videos
-	VideoCapture inputCapture("PadronCirculos_01.avi");
+	VideoCapture inputCapture("PadronCirculos_02.avi");
 	setNumThreads(8);
 	/*    ---------------------------------------------------- 1ERA PARTE  ---------------------------------------------*/
 	//1ERA PARTE del trabajo corresponde en obtener el tablero de anillos (total 30) sin ruidos
@@ -126,7 +126,7 @@ int main(){
 			Mat pointsf;
 			RotatedRect box;
 			// Un contorno es valido si el area es positiva y no sea tan grande
-			if (contourArea(contours[ii])>1 && contourArea(contours[ii]) < 10000){
+			if (contourArea(contours[ii])>1 && contourArea(contours[ii]) < 10000 && contours[ii].size()>5){
 				Mat pointsf;
 				RotatedRect box;
 				//utilizamos fitellipse para obtener un rectangulo que lo contenga
