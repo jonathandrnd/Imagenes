@@ -66,3 +66,6 @@ Si la distancia es muy grande la componente conexa seria mayor a 30 (Es decir cu
 Por lo tanto es una funcion monótona en la que se puede aplicar busqueda binaria (Por lo tanto encontramos la distancia que nos proporcione la componente conexa de tamaño 30 como la mas grande de todas las componentes conexas).
 Esto debido a que el ruido tambien forma una componente conexa pero sera de menor tamaño y no sera considerada.
 
+Mejora 3
+Nuevos videos, indicando las mejoras. (Subidos en google drive).
+Mejora del informe relatorio.
