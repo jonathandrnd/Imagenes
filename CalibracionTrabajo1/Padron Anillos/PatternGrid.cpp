@@ -111,7 +111,7 @@ int main(){
 		/// Draw contours
 		Mat drawing = Mat::zeros(src.size(), CV_8U);
 		// vector v contendra informacion de los centros de los contornos validos
-		v= vector<nodo>(contours.size(), nodo(1, 1, 1, 1));
+		v = vector<nodo>(contours.size(), nodo(1, 1, 1, 1));
 
 		//paralelizamos esta parte ya que la funcion fitellipse es lenta
 		#pragma omp parallel for 
@@ -120,7 +120,7 @@ int main(){
 			Mat pointsf;
 			RotatedRect box;
 			// Un contorno es valido si el area es positiva y no sea tan grande
-			if (contourArea(contours[ii])>1 && contourArea(contours[ii])<10000){
+			if (contourArea(contours[ii])>1 && contourArea(contours[ii])<10000 && contours[ii].size()>5){
 				Mat pointsf;
 				RotatedRect box;
 				//utilizamos fitellipse para obtener un rectangulo que lo contenga
@@ -154,7 +154,7 @@ int main(){
 				if (hypot((v[i].cx - v[j].cx), (v[i].cy - v[j].cy)) <= 1.5){
 					S.insert(v[i]);// luego elimino los que tengan el valor 1
 				}
-			}
+		}
 
 		v = vector<nodo>(S.begin(), S.end());
 		//luego de eliminar duplicados con Set , si hay 2 centros cercanos solo se considerara 1 de ellos
@@ -294,7 +294,7 @@ int main(){
 					}
 				}
 			}
-			
+
 			vector<Point2f> pointBuf, pointBuf2(30, Point2f(0, 0));
 
 			// el metodo anterior ordena los segmentos de arriba hacia abajo usando ordenamiento burbuja
@@ -303,13 +303,13 @@ int main(){
 					pointBuf.push_back(Point2f(vsegmento[i][j].cx, vsegmento[i][j].cy));
 				}
 			}
-			
+
 			// con pointBuf tenemos el orden en horizontal, para colocarlo en vertical realizamos lo siguiente
 			int cont = 0;
 			for (int i = 0; i < 6; i++)
 				for (int j = 0; j < 5; j++)
-					pointBuf2[cont++] = pointBuf[i + j*6];
-					
+					pointBuf2[cont++] = pointBuf[i + j * 6];
+
 			//ahora simplemente dibujamos el zigzag con el orden ya definido previamente
 			drawChessboardCorners(original, boardSize, Mat(pointBuf2), 1);
 			namedWindow("Original", WINDOW_AUTOSIZE);
