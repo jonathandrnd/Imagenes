@@ -3,6 +3,7 @@
 #include <iostream>
 #include <queue>
 #include <cmath>
+#include <omp.h>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -119,6 +120,7 @@ int main(){
 		v = vector<nodo>(contours.size(), nodo(1, 1, 1, 1));
 
 		//paralelizamos esta parte ya que la funcion fitellipse es lenta
+		#pragma omp parallel for 
 		for (int ii = 0; ii < (int)contours.size(); ii++){
 			vector<Point>P = contours[ii];
 			Mat pointsf;
