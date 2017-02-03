@@ -14,6 +14,9 @@ Hay 3 algoritmos implementados que realizan lo siguiente:
 * Padron Circulos
 	Contiene la deteccion del padron de calibracion de circulos, mediante un algoritmo propio.
 	Patterncircle.cpp
+* Tablas Calibracion
+	Contiene todos los datos de calibracion obtenidos en los 14 videos, en el caso de conocer un mayor detalle revisar la carpeta data_adicional.
+
 El Padron es calculado automaticamente.
 	
 ----------------------------------------------------------------
