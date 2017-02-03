@@ -1,0 +1,48 @@
+#Padron de Calibracion parte 2
+
+Trabajo N°2 del curso de Imagenes de la UCSP
+----------------------------------------------------------------
+Especificaciones
+----------------------------------------------------------------
+Hay 3 algoritmos implementados que realizan lo siguiente:
+* Padron Anillos
+	Contiene la deteccion del padron de calibracion de anillos, mediante un algoritmo propio.
+	PatternGrid.cpp	
+* Padron Circulos OpenCV
+	Contiene la deteccion del padron de calibracion de circulos, mediante el algoritmo de OpenCV.
+	Calibration.cpp
+* Padron Circulos
+	Contiene la deteccion del padron de calibracion de circulos, mediante un algoritmo propio.
+	Patterncircle.cpp
+El Padron es calculado automaticamente.
+	
+----------------------------------------------------------------
+Videos
+----------------------------------------------------------------
+Se han utilizado 14 videos los cuales se encuentran en la carpeta videos
+
+----------------------------------------------------------------
+Ejecucion del programa
+----------------------------------------------------------------
+En el caso de los algoritmos propios (Patterncircle.cpp,PatternGrid.cpp)
+Modificar 2 parametros:
+nombrevideo y cantframes
+
+Los nombres de videos seran los que aparecen en la carpeta videos.
+cantframes sera (25,50,75).
+Se han escogido los frames para la calibracion
+
+ejm:
+string nombrevideo = "medir_640x360_circulos.wmv";
+int cantframes = 75;
+
+----------------------------------------------------------------
+Equipo Victor.
+----------------------------------------------------------------
+Integrantes
+
+*Jonathan Durand
+
+*Victor Cornejo
+
+*Javier Neira
