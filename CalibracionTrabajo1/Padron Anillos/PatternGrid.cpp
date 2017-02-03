@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include <iostream>
 #include <omp.h>
+#include <queue>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -11,6 +12,7 @@ using namespace std;
 using namespace cv;
 Mat src, grey;
 int thresh = 100;
+bool visited[1001];
 
 // estructura que almacena la informacion de contorno
 struct nodo{
@@ -41,6 +43,9 @@ vector<nodo>limpiar(vector<nodo>v){
 	return ans;
 }
 
+vector<nodo>v;
+
+
 //hallar el area de un triangulo 
 int area(pair<int, int>a, pair<int, int>b, pair<int, int>c){
 	int x1 = a.first, y1 = a.second;
@@ -49,9 +54,37 @@ int area(pair<int, int>a, pair<int, int>b, pair<int, int>c){
 	return abs(x2*y3 + x1*y2 + y1*x3 - x2*y1 - x3*y2 - y3*x1);
 }
 
+int bfs(int pos, double dis, vector<nodo>&aux){
+	visited[pos] = 1;
+	queue<int>Q;
+	Q.push(pos);// metemos a la cola el nodo actual
+	int cont = 1;
+	aux.push_back(v[pos]);
+
+	while (!Q.empty()){
+		int id = Q.front();
+		Q.pop();
+		for (int i = 0; i < v.size(); i++){
+			// si hay algun nodo no visitado que se encuentra a una distancia dada entonces
+			// lo agregamos a la cola
+			if (!visited[i] && hypot(v[i].cx - v[id].cx, v[i].cy - v[id].cy) <= dis){
+				aux.push_back(v[i]);
+				cont++;
+				Q.push(i);
+				visited[i] = 1;
+			}
+		}
+	}
+
+	return cont;
+}
+
+
+
+
 int main(){
 	// colocar PadronAnillos_01.avi , PadronAnillos_02.avi , PadronAnillos_03.avi que son los nombres de los videos
-	VideoCapture inputCapture("PadronAnillos_02.avi");
+	VideoCapture inputCapture("PadronAnillos_03.avi");
 	setNumThreads(8);
 	/*    ---------------------------------------------------- 1ERA PARTE  ---------------------------------------------*/
 	//1ERA PARTE del trabajo corresponde en obtener el tablero de anillos (total 30) sin ruidos
@@ -78,16 +111,16 @@ int main(){
 		/// Draw contours
 		Mat drawing = Mat::zeros(src.size(), CV_8U);
 		// vector v contendra informacion de los centros de los contornos validos
-		vector<nodo>v(contours.size(), nodo(1, 1, 1, 1));
+		v = vector<nodo>(contours.size(), nodo(1, 1, 1, 1));
 
 		//paralelizamos esta parte ya que la funcion fitellipse es lenta
-#pragma omp parallel for 
+		#pragma omp parallel for 
 		for (int ii = 0; ii < (int)contours.size(); ii++){
 			vector<Point>P = contours[ii];
 			Mat pointsf;
 			RotatedRect box;
 			// Un contorno es valido si el area es positiva y no sea tan grande
-			if (contourArea(contours[ii])>1 && contourArea(contours[ii])<10000){
+			if (contourArea(contours[ii])>1 && contourArea(contours[ii])<10000 && contours[ii].size()>5){
 				Mat pointsf;
 				RotatedRect box;
 				//utilizamos fitellipse para obtener un rectangulo que lo contenga
@@ -102,7 +135,7 @@ int main(){
 
 				float f1 = box.size.height;
 				float f2 = box.size.width;
-				// si el largo y el ancho difieren minimamente en tama�o y el area no es tan grande sera considerado
+				// si el largo y el ancho difieren minimamente en tamaño y el area no es tan grande sera considerado
 				// como posible contorno
 				if (fabs(f2 - f1) <= 12 && f1*f2 <= 1500){
 					Point2f centro = box.center;
@@ -121,7 +154,7 @@ int main(){
 				if (hypot((v[i].cx - v[j].cx), (v[i].cy - v[j].cy)) <= 1.5){
 					S.insert(v[i]);// luego elimino los que tengan el valor 1
 				}
-			}
+		}
 
 		v = vector<nodo>(S.begin(), S.end());
 		//luego de eliminar duplicados con Set , si hay 2 centros cercanos solo se considerara 1 de ellos
@@ -133,7 +166,48 @@ int main(){
 
 		//eliminaremos todos los elementos que tengan el atributo visit diferente de 0
 		v = limpiar(v);
-		cout << v.size() << endl;
+
+		// Tenemos los centros de varios contornos y debemos quedarnos con los 30 del patron
+		// La observacion esta en que la distancia entre cada centro del patron es pequeña
+		// Por lo tanto dado una distancia debemos encontrar el tamaño maximo de las componentes conexas formadas (este debe ser 30)
+		// Si una distancia es pequenha entonces la componente tendra tamanho 1 si es muy grande el tamanho sera el total de nodos.
+		// Por lo tanto aplicamos binary search para encontrar la minima distancia de tal modo que la componente conexa mas grande sea 44 - tablero
+		double lo = 1; double hi = 2000;
+		vector<nodo>aux;
+		for (int it = 0; it < 30; it++){
+			double me = (lo + hi) / 2;
+			memset(visited, 0, sizeof(visited));
+			int maxi = 0;
+			for (int i = 0; i < v.size(); i++){
+				if (!visited[i]){
+					aux.clear();
+					// el bfs me retorna el tamanho de la componente conexa. la busqueda se hace en anchura 
+					// la busqueda en profundidad tambien es valido
+					maxi = max(maxi, bfs(i, me, aux));
+				}
+			}
+			if (maxi >= 30){
+				hi = me;
+			}
+			else{
+				lo = me;
+			}
+		}
+
+		memset(visited, 0, sizeof(visited));
+		// aqui solo recuperamos el vector con los 30 puntos deseados
+		for (int i = 0; i < v.size(); i++){
+			if (!visited[i]){
+				aux.clear();
+				int val = bfs(i, hi, aux);
+				if (val == 30){
+					break;
+				}
+			}
+		}
+
+		v = aux;
+
 		// dibujamos los contornos que solo corresponden al tablero de anillos (total 30)
 		for (int i = 0; i < v.size(); i++)
 			drawContours(drawing, contours, v[i].id, Scalar(255, 255, 255), CV_FILLED);
@@ -220,7 +294,7 @@ int main(){
 					}
 				}
 			}
-			
+
 			vector<Point2f> pointBuf, pointBuf2(30, Point2f(0, 0));
 
 			// el metodo anterior ordena los segmentos de arriba hacia abajo usando ordenamiento burbuja
@@ -229,13 +303,13 @@ int main(){
 					pointBuf.push_back(Point2f(vsegmento[i][j].cx, vsegmento[i][j].cy));
 				}
 			}
-			
+
 			// con pointBuf tenemos el orden en horizontal, para colocarlo en vertical realizamos lo siguiente
 			int cont = 0;
 			for (int i = 0; i < 6; i++)
 				for (int j = 0; j < 5; j++)
-					pointBuf2[cont++] = pointBuf[i + j*6];
-					
+					pointBuf2[cont++] = pointBuf[i + j * 6];
+
 			//ahora simplemente dibujamos el zigzag con el orden ya definido previamente
 			drawChessboardCorners(original, boardSize, Mat(pointBuf2), 1);
 			namedWindow("Original", WINDOW_AUTOSIZE);

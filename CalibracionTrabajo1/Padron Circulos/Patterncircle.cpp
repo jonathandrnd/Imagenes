@@ -3,6 +3,7 @@
 #include <iostream>
 #include <queue>
 #include <cmath>
+#include <omp.h>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -90,7 +91,7 @@ int bfs(int pos, double dis, vector<nodo>&aux){
 
 int main(){
 	// colocar PadronCirculos_01.avi , PadronCirculos_02.avi , PadronCirculos_03.avi que son los nombres de los videos
-	VideoCapture inputCapture("PadronCirculos_01.avi");
+	VideoCapture inputCapture("PadronCirculos_02.avi");
 	setNumThreads(8);
 	/*    ---------------------------------------------------- 1ERA PARTE  ---------------------------------------------*/
 	//1ERA PARTE del trabajo corresponde en obtener el tablero de anillos (total 30) sin ruidos
@@ -119,12 +120,13 @@ int main(){
 		v = vector<nodo>(contours.size(), nodo(1, 1, 1, 1));
 
 		//paralelizamos esta parte ya que la funcion fitellipse es lenta
+		#pragma omp parallel for 
 		for (int ii = 0; ii < (int)contours.size(); ii++){
 			vector<Point>P = contours[ii];
 			Mat pointsf;
 			RotatedRect box;
 			// Un contorno es valido si el area es positiva y no sea tan grande
-			if (contourArea(contours[ii])>1 && contourArea(contours[ii]) < 10000){
+			if (contourArea(contours[ii])>1 && contourArea(contours[ii]) < 10000 && contours[ii].size()>5){
 				Mat pointsf;
 				RotatedRect box;
 				//utilizamos fitellipse para obtener un rectangulo que lo contenga
@@ -338,28 +340,29 @@ int main(){
 		if (aux2.size() > 0)
 			vnodo.push_back(aux2);
 
-		/*  En este codigo comentado podemos visualizar los 9 segmentos diagonales de tamanho 8 ,8,7,6,5,4,3,2,1
+		//  En este codigo comentado podemos visualizar los 9 segmentos diagonales de tamanho 8 ,8,7,6,5,4,3,2,1
+		/*
 		for (int i = 0; i < vnodo.size(); i++)
-		for (int j = 0; j < vnodo[i].size(); j++){
-		if (i % 9 == 0)
-		circle(original, Point(vnodo[i][j].cx, vnodo[i][j].cy), 8, Scalar(255, 0, 0), 1, 8, 0);
-		if (i % 9 == 1)
-		circle(original, Point(vnodo[i][j].cx, vnodo[i][j].cy), 5, Scalar(0, 255, 0), 1, 8, 0);
-		if (i % 9 == 2)
-		circle(original, Point(vnodo[i][j].cx, vnodo[i][j].cy), 5, Scalar(0, 0, 255), 1, 8, 0);
-		if (i % 9 == 3)
-		circle(original, Point(vnodo[i][j].cx, vnodo[i][j].cy), 5, Scalar(255, 255, 255), 1, 8, 0);
-		if (i % 9 == 4)
-		circle(original, Point(vnodo[i][j].cx, vnodo[i][j].cy), 5, Scalar(255, 255, 0), 1, 8, 0);
-		if (i % 9 == 5)
-		circle(original, Point(vnodo[i][j].cx, vnodo[i][j].cy), 5, Scalar(0, 255, 255), 1, 8, 0);
-		if (i % 9 == 6)
-		circle(original, Point(vnodo[i][j].cx, vnodo[i][j].cy), 5, Scalar(255,0, 255), 1, 8, 0);
-		if (i % 9 == 7)
-		circle(original, Point(vnodo[i][j].cx, vnodo[i][j].cy), 5, Scalar(15, 15, 15), 1, 8, 0);
-		if (i % 9 == 8)
-		circle(original, Point(vnodo[i][j].cx, vnodo[i][j].cy), 5, Scalar(200, 120,200), 1, 8, 0);
-		}
+			for (int j = 0; j < vnodo[i].size(); j++){
+				if (i % 9 == 0)
+					circle(original, Point(vnodo[i][j].cx, vnodo[i][j].cy), 8, Scalar(255, 0, 0), 1, 8, 0);
+				if (i % 9 == 1)
+					circle(original, Point(vnodo[i][j].cx, vnodo[i][j].cy), 5, Scalar(0, 255, 0), 1, 8, 0);
+				if (i % 9 == 2)
+					circle(original, Point(vnodo[i][j].cx, vnodo[i][j].cy), 5, Scalar(0, 0, 255), 1, 8, 0);
+				if (i % 9 == 3)
+					circle(original, Point(vnodo[i][j].cx, vnodo[i][j].cy), 5, Scalar(255, 255, 255), 1, 8, 0);
+				if (i % 9 == 4)
+					circle(original, Point(vnodo[i][j].cx, vnodo[i][j].cy), 5, Scalar(255, 255, 0), 1, 8, 0);
+				if (i % 9 == 5)
+					circle(original, Point(vnodo[i][j].cx, vnodo[i][j].cy), 5, Scalar(0, 255, 255), 1, 8, 0);
+				if (i % 9 == 6)
+					circle(original, Point(vnodo[i][j].cx, vnodo[i][j].cy), 5, Scalar(255,0, 255), 1, 8, 0);
+				if (i % 9 == 7)
+					circle(original, Point(vnodo[i][j].cx, vnodo[i][j].cy), 5, Scalar(15, 15, 15), 1, 8, 0);
+				if (i % 9 == 8)
+					circle(original, Point(vnodo[i][j].cx, vnodo[i][j].cy), 5, Scalar(200, 120,200), 1, 8, 0);
+			}
 		*/
 
 		// ordenamos los segmentos de abajo hacia arriba mediante el producto vectorial
@@ -373,6 +376,7 @@ int main(){
 			}
 		}
 
+
 		// hay 9 segmentos que corresponden a 9 diagonales de tamanho 8 , 8 , 7 ,6 ,5,4,3,2,1
 		// los cuales estan ordenados de arriba hacia abajo por producto vectorial
 		// lo que deseamos es tener 11 verticales de tamanho 4, por lo que realizamos el siguiente procedimiento
@@ -380,15 +384,33 @@ int main(){
 		if (vnodo.size() == 9){
 			bool visited2[9][100];
 			memset(visited2, 0, sizeof(visited2));
-			for (int caso = 0; caso < 11; caso++){
-				int count = 0;
-				for (int i = 0; i < 9 && count<4; i++){
-					for (int j = 0; j < vnodo[i].size() && count<4; j++){
-						if (!visited2[i][j]){
-							pointBuf.push_back(Point2f(vnodo[i][j].cx, vnodo[i][j].cy));
-							count++;
-							visited2[i][j] = 1;
-							break;
+			// si es una diagonal de tamanho 2 entonces ordenar de menor a mayor x
+			if (vnodo[0].size() == 2){
+				for (int caso = 0; caso < 11; caso++){
+					int count = 0;
+					for (int i = 0; i < 9 && count < 4; i++){
+						for (int j = 0; j < vnodo[i].size() && count < 4; j++){
+							if (!visited2[i][j]){
+								pointBuf.push_back(Point2f(vnodo[i][j].cx, vnodo[i][j].cy));
+								count++;
+								visited2[i][j] = 1;
+								break;
+							}
+						}
+					}
+				}
+			}// si es una diagonal de tamanho 1 entonces ordenar de mayor a menor x (es decir leer viceversa)
+			else{
+				for (int caso = 0; caso < 11; caso++){
+					int count = 0;
+					for (int i = 0; i < 9 && count < 4; i++){
+						for (int j = vnodo[i].size()-1; j >=0 && count < 4; j--){
+							if (!visited2[i][j]){
+								pointBuf.push_back(Point2f(vnodo[i][j].cx, vnodo[i][j].cy));
+								count++;
+								visited2[i][j] = 1;
+								break;
+							}
 						}
 					}
 				}
@@ -408,4 +430,3 @@ int main(){
 	return 0;
 }
 
-s
