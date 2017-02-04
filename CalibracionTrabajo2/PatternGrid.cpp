@@ -20,6 +20,7 @@ bool visited[1001];
 Size imageSize;
 Size boardSize(5, 6);
 double squareSize = 25.5;
+string nombrevideo;
 
 // estructura que almacena la informacion de contorno
 struct nodo{
@@ -306,10 +307,66 @@ double runCalibrationAndSave(Mat view, Size imageSize, Mat&  cameraMatrix, Mat& 
 	return totalAvgErr;
 }
 
+string fdist(double d){
+	stringstream st;
+	st << d;
+	return st.str();
+}
+
+void distancia(Mat &original, vector<Point2f> pointBuf){
+	cv::Mat rvec(3, 1, CV_64F);
+	cv::Mat tvec(3, 1, CV_64F);
+	vector<Point3f> corners;
+
+	for (int i = 0; i < boardSize.height; i++)
+		for (int j = 0; j < boardSize.width; j++)
+			corners.push_back(Point3f(float((2 * j + i % 2)*squareSize), float(i*squareSize), 0));
+
+	Mat cameraMatrix = Mat::eye(3, 3, CV_64F);
+	Mat distCoeffs = Mat::zeros(8, 1, CV_64F);
+
+	if (nombrevideo == "medir_640x360_anillos.wmv"){
+		cameraMatrix = (Mat_<double>(3, 3) << 481.5991946236377, 0, 336.9620045529209,
+		0, 478.3494631742452, 173.4330519410786,
+		0, 0, 1);
+		distCoeffs = (Mat_<double>(8, 1) << -0.003462416139249731,
+		-0.006616429955736139,
+		0,
+		0,
+		-0.04265957142948389,0,0,0);
+	}
+
+	if (nombrevideo == "medir_1280x720_circulos.wmv"){
+		cameraMatrix = (Mat_<double>(3, 3) << 994.1857055250848, 0, 652.763799552283,
+			0, 989.6658171664607, 339.8798641887981,
+			0, 0, 1);
+		distCoeffs = (Mat_<double>(8, 1) << 0.01233655913584688,
+			0.01378170329631141,
+			0,
+			0,
+			-0.07007801575618876, 0, 0, 0);
+	}
+
+	//cout << "camera Matrix: " << cameraMatrix<< endl;
+	//cout << "distCoeffs: " << distCoeffs<< endl;
+
+	if (solvePnP(corners, pointBuf, cameraMatrix, distCoeffs, rvec, tvec)){
+		Mat dst = Mat::zeros(3, 3, CV_64F);
+		Rodrigues(rvec, dst, noArray());
+		cout << "distancia " << norm((-dst).t()*tvec) << endl;
+		string valuedist = "";
+		valuedist = fdist(norm((-dst).t()*tvec));
+		valuedist = "distancia " + valuedist;
+
+		putText(original, valuedist, Point2f(15, 20), FONT_HERSHEY_PLAIN, 1, Scalar(0, 0, 255, 255));
+	}
+}
+
+
 int main(){
 	// colocar PadronAnillos_01.avi , PadronAnillos_02.avi , PadronAnillos_03.avi,calibrar_anillo_nuevo_1280x720.wmv,calibrar_anillo_nuevo_640x360.wmv,medir_1280x720_anillos,medir_640x360_anillos.wmv que son los nombres de los videos
-	String nombrevideo = "medir_640x360_anillos.wmv";
-	int cantframes = 75;
+    nombrevideo = "medir_1280x720_anillos.wmv";
+	int cantframes = 25;
 
 	vector<int>frames = takeframes(nombrevideo, cantframes);// los frames a considerar para la calibracion
 	//vector<int>frames = primeroscantframes(cantframes);
@@ -372,7 +429,7 @@ int main(){
 
 				float f1 = box.size.height;
 				float f2 = box.size.width;
-				// si el largo y el ancho difieren minimamente en tamaño y el area no es tan grande sera considerado
+				// si el largo y el ancho difieren minimamente en tamaÃ±o y el area no es tan grande sera considerado
 				// como posible contorno
 				if (fabs(f2 - f1) <= 12 && f1*f2 <= 1500){
 					Point2f centro = box.center;
@@ -405,8 +462,8 @@ int main(){
 		v = limpiar(v);
 
 		// Tenemos los centros de varios contornos y debemos quedarnos con los 30 del patron
-		// La observacion esta en que la distancia entre cada centro del patron es pequeña
-		// Por lo tanto dado una distancia debemos encontrar el tamaño maximo de las componentes conexas formadas (este debe ser 30)
+		// La observacion esta en que la distancia entre cada centro del patron es pequeÃ±a
+		// Por lo tanto dado una distancia debemos encontrar el tamaÃ±o maximo de las componentes conexas formadas (este debe ser 30)
 		// Si una distancia es pequenha entonces la componente tendra tamanho 1 si es muy grande el tamanho sera el total de nodos.
 		// Por lo tanto aplicamos binary search para encontrar la minima distancia de tal modo que la componente conexa mas grande sea 44 - tablero
 		double lo = 1; double hi = 2000;
@@ -552,28 +609,31 @@ int main(){
 					reverse(pointBuf2.begin(), pointBuf2.end());
 				}
 
+
 			cout << "numFrame: " << numframe << " " << posframe << " " << frames.size() << endl;
-			/**/
-			if (numframe == frames[posframe]){
-				imagePoints.push_back(pointBuf2);
-				posframe++;
+			if (nombrevideo == "medir_1280x720_anillos.wmv" || nombrevideo == "medir_640x360_anillos.wmv"){
+				distancia(original, pointBuf2);
 			}
+			else{
+				/**/
+				if (numframe == frames[posframe]){
+					imagePoints.push_back(pointBuf2);
+					posframe++;
+				}
 
+				if (posframe == frames.size()){
+					cout << "inicia calibracion" << endl;
+					runCalibrationAndSave(original, imageSize, cameraMatrix, distCoeffs, imagePoints);
+					break;
+				}
 
-			if (posframe == frames.size()){
-				cout << "inicia calibracion" << endl;
-				runCalibrationAndSave(original, imageSize, cameraMatrix, distCoeffs, imagePoints);
-				break;
+				/*
+				double error = runCalibrationAndSave(original, imageSize, cameraMatrix, distCoeffs, vector<vector<Point2f> >(1, pointBuf2));
+				cout << "error " << error << endl;
+				errorframe.push_back(make_pair(error, numframe));
+				*/
+				numframe++;
 			}
-			
-			
-			/*
-			double error = runCalibrationAndSave(original, imageSize, cameraMatrix, distCoeffs, vector<vector<Point2f> >(1, pointBuf2));
-			cout << "error " << error << endl;
-			errorframe.push_back(make_pair(error, numframe));
-			*/
-			numframe++;
-			
 			//ahora simplemente dibujamos el zigzag con el orden ya definido previamente
 			drawChessboardCorners(original, boardSize, Mat(pointBuf2), 1);
 			namedWindow("Original", WINDOW_AUTOSIZE);
