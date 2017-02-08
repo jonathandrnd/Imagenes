@@ -21,6 +21,8 @@ Size imageSize;
 Size boardSize(5, 6);
 double squareSize = 25.5;
 string nombrevideo;
+int numframe = 0;
+vector<double>dist;
 
 // estructura que almacena la informacion de contorno
 struct nodo{
@@ -68,12 +70,12 @@ vector<int>takeframes(string namefile, int cant){
 
 
 	if (namefile == "calibrar_anillo_nuevo_1280x720.wmv"){
-		int p1[75] = { 0, 3, 6, 9, 10, 12, 16, 17, 18, 20, 23, 25, 26, 27, 28, 30, 33, 37, 40, 45, 47, 48, 49, 51, 52, 54, 57, 105, 181, 201, 203, 204, 205, 207, 211, 215, 218, 220, 223, 224, 225, 231, 235, 244, 247, 255, 261, 263, 267, 270, 271, 275, 337, 376, 421, 422, 425, 445, 449, 459, 460, 465, 480, 483, 488, 511, 513, 517, 520, 528, 546, 557, 583, 604, 610, };
+		int p1[75] = { 0, 1, 6, 8, 15, 21, 27, 28, 30, 33, 35, 38, 41, 45, 47, 51, 53, 55, 58, 191, 194, 197, 200, 205, 213, 215, 219, 221, 226, 229, 232, 234, 237, 240, 241, 245, 251, 254, 262, 265, 313, 314, 315, 317, 320, 321, 322, 372, 373, 380, 389, 391, 394, 397, 419, 420, 421, 429, 430, 431, 434, 448, 454, 476, 479, 486, 496, 507, 509, 517, 520, 532, 542, 563, 567 };
 		values = get(p1);
 	}
 
 	if (namefile == "calibrar_anillo_nuevo_640x360.wmv"){
-		int p1[75] = { 14, 68, 69, 70, 74, 107, 109, 146, 172, 175, 201, 206, 207, 211, 215, 228, 257, 259, 277, 280, 289, 306, 317, 319, 339, 340, 341, 350, 390, 391, 398, 437, 445, 449, 450, 451, 470, 474, 494, 499, 500, 502, 511, 516, 520, 522, 591, 606, 607, 608, 610, 641, 643, 645, 649, 658, 659, 660, 666, 667, 668, 738, 740, 744, 757, 793, 826, 850, 854, 871, 876, 908, 1122, 1331, 1335};
+		int p1[75] = { 2, 7, 13, 19, 32, 36, 49, 76, 95, 107, 129, 130, 140, 165, 172, 181, 203, 227, 247, 261, 282, 299, 301, 302, 312, 320, 344, 347, 353, 371, 375, 385, 407, 429, 442, 456, 466, 485, 497, 513, 525, 541, 551, 562, 574, 585, 596, 618, 619, 636, 668, 670, 688, 733, 783, 791, 815, 835, 861, 868, 900, 994, 1002, 1016, 1114, 1118, 1211, 1330, 1368, 1382, 1414, 1461, 1481, 1488, 1491 };
 		values = get(p1);
 	}
 	
@@ -314,37 +316,37 @@ string fdist(double d){
 }
 
 void distancia(Mat &original, vector<Point2f> pointBuf){
+	
 	cv::Mat rvec(3, 1, CV_64F);
 	cv::Mat tvec(3, 1, CV_64F);
 	vector<Point3f> corners;
-
 	for (int i = 0; i < boardSize.height; i++)
 		for (int j = 0; j < boardSize.width; j++)
-			corners.push_back(Point3f(float((2 * j + i % 2)*squareSize), float(i*squareSize), 0));
+			corners.push_back(Point3f(float(j*squareSize), float(i*squareSize), 0));
 
 	Mat cameraMatrix = Mat::eye(3, 3, CV_64F);
 	Mat distCoeffs = Mat::zeros(8, 1, CV_64F);
 
 	if (nombrevideo == "medir_640x360_anillos.wmv"){
-		cameraMatrix = (Mat_<double>(3, 3) << 481.5991946236377, 0, 336.9620045529209,
-		0, 478.3494631742452, 173.4330519410786,
+		cameraMatrix = (Mat_<double>(3, 3) << 488.0321954583645, 0, 330.2765238775828,
+		0, 485.5352079137646, 172.0592124328771,
 		0, 0, 1);
-		distCoeffs = (Mat_<double>(8, 1) << -0.003462416139249731,
-		-0.006616429955736139,
+		distCoeffs = (Mat_<double>(8, 1) << -0.004211367806464171,
+			-0.00825232247307175,
 		0,
 		0,
-		-0.04265957142948389,0,0,0);
+		-0.04104284377324537, 0, 0, 0);
 	}
 
 	if (nombrevideo == "medir_1280x720_circulos.wmv"){
-		cameraMatrix = (Mat_<double>(3, 3) << 994.1857055250848, 0, 652.763799552283,
-			0, 989.6658171664607, 339.8798641887981,
-			0, 0, 1);
-		distCoeffs = (Mat_<double>(8, 1) << 0.01233655913584688,
-			0.01378170329631141,
+		cameraMatrix = (Mat_<double>(3, 3) << 995.2879103202191, 0, 652.366423379633,
+		0, 990.9977657087171, 342.6447609965957,
+		0, 0, 1);
+		distCoeffs = (Mat_<double>(8, 1) << 0.01894022119472604,
+			-0.00378900400831297,
 			0,
 			0,
-			-0.07007801575618876, 0, 0, 0);
+			-0.05370745733157262, 0, 0, 0);
 	}
 
 	//cout << "camera Matrix: " << cameraMatrix<< endl;
@@ -353,26 +355,29 @@ void distancia(Mat &original, vector<Point2f> pointBuf){
 	if (solvePnP(corners, pointBuf, cameraMatrix, distCoeffs, rvec, tvec)){
 		Mat dst = Mat::zeros(3, 3, CV_64F);
 		Rodrigues(rvec, dst, noArray());
-		cout << "distancia " << norm((-dst).t()*tvec) << endl;
+		double daux = norm((-dst).t()*tvec);
+		dist.push_back(daux);
+		cout << "distancia " << daux << endl;
 		string valuedist = "";
-		valuedist = fdist(norm((-dst).t()*tvec));
+		valuedist = fdist(daux);
 		valuedist = "distancia " + valuedist;
 
 		putText(original, valuedist, Point2f(15, 20), FONT_HERSHEY_PLAIN, 1, Scalar(0, 0, 255, 255));
+		putText(original, fdist(numframe), Point2f(50,50), FONT_HERSHEY_PLAIN, 1, Scalar(0, 0, 255, 255));
 	}
 }
 
 
 int main(){
 	// colocar PadronAnillos_01.avi , PadronAnillos_02.avi , PadronAnillos_03.avi,calibrar_anillo_nuevo_1280x720.wmv,calibrar_anillo_nuevo_640x360.wmv,medir_1280x720_anillos,medir_640x360_anillos.wmv que son los nombres de los videos
-    nombrevideo = "medir_1280x720_anillos.wmv";
-	int cantframes = 25;
+    nombrevideo = "medir_640x360_anillos.wmv";
+	int cantframes = 75;
 
 	vector<int>frames = takeframes(nombrevideo, cantframes);// los frames a considerar para la calibracion
 	//vector<int>frames = primeroscantframes(cantframes);
 	cout << "cantidad de frames a procesar" << cantframes << " " << frames.size() << endl;
 	VideoCapture inputCapture(nombrevideo);
-	int numframe = 0; // indica el numero de frame que esta siendo procesado en el video.
+	numframe = 0; // indica el numero de frame que esta siendo procesado en el video.
 	int posframe = 0; // sirve para posicionar en el arreglo
 	setNumThreads(8);
 	/*    ---------------------------------------------------- 1ERA PARTE  ---------------------------------------------*/
@@ -388,22 +393,31 @@ int main(){
 		// Mat original contiene los frames del video a colores
 		if (!inputCapture.read(original))break;
 		imageSize = original.size();
-		cout << imageSize << endl;
+
 		//convertimos a escala de grises
 		cvtColor(original, src, CV_BGR2GRAY);
 		//eliminamos el ruido con desenfoque gaussiano
 		GaussianBlur(src, src, Size(5, 5), 10, 10);
 		//Obtenemos los bordes de la imagen con Canny
+		if (imageSize.width < 700){
+			adaptiveThreshold(src, src, 255.0, CV_THRESH_BINARY, CV_THRESH_BINARY, 101, -5);
+			imshow("Adaptative", src);
+		}
 		Canny(src, src, thresh, 2 * thresh);
+		imshow("Canny", src);
 
-		Mat image2 = src;
 		vector<vector<Point> > contours;
 		vector<Vec4i> hierarchy;
 		//Encontramos todos los contornos de la imagen y lo guardamos en el vector Contours
 		findContours(src, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
 
 		/// Draw contours
+		Mat drawing2 = Mat::zeros(src.size(), CV_8UC3);
 		Mat drawing = Mat::zeros(src.size(), CV_8U);
+		Mat image2 = Mat::zeros(src.size(), CV_8U);
+		Mat image3 = Mat::zeros(src.size(), CV_8U);
+		Mat image4 = Mat::zeros(src.size(), CV_8U);
+
 		// vector v contendra informacion de los centros de los contornos validos
 		v = vector<nodo>(contours.size(), nodo(1, 1, 1, 1));
 
@@ -438,37 +452,68 @@ int main(){
 			}
 		}
 
+		
 		v = limpiar(v);
+		
+		sort(v.begin(), v.end());
+
 		set<nodo>S;
 		// ahora trabajaremos con los centros de cada contorno
 		// tenemos circulos concentricos si existen 2 puntos iguales o muy cercanos  solo consideraremos 1 de ellos
 		// Set nos permite eliminar duplicados
+		memset(visited, 0, sizeof(visited));
+		
 		for (int i = 0; i < v.size(); i++){
-			for (int j = i + 1; j < v.size(); j++)
-				if (hypot((v[i].cx - v[j].cx), (v[i].cy - v[j].cy)) <= 1.5){
-					S.insert(v[i]);// luego elimino los que tengan el valor 1
+			if (visited[i])continue;
+			double sumx = 0; double sumy = 0;
+			int cont = 0;
+			for (int j = i + 1; j < v.size(); j++){
+				if (visited[j])continue;
+				if (abs((v[i].cx - v[j].cx)) <= 1.5  && abs(v[i].cy - v[j].cy) <= 1.5){
+					visited[j] = 1;
+					sumx += v[i].cx;
+					sumy += v[i].cy;
+					cont++;
 				}
+				if (v[j].cx > v[i].cx + 10)break;
+			}
+
+			if (  cont>=1){
+				v[i].cx = sumx / cont;
+				v[i].cy = sumy / cont;
+				S.insert(v[i]);
+			}
 		}
 
 		v = vector<nodo>(S.begin(), S.end());
 		//luego de eliminar duplicados con Set , si hay 2 centros cercanos solo se considerara 1 de ellos
 		for (int i = 0; i < v.size(); i++)
 			for (int j = i + 1; j < v.size(); j++)
-				if (hypot((v[i].cx - v[j].cx), (v[i].cy - v[j].cy)) <= 1.5){
+				if (abs((v[i].cx - v[j].cx)) <= 1.5 && abs(v[i].cy - v[j].cy) <= 1.5){
 					v[j].visit = 1;
 				}
+		
 
 		//eliminaremos todos los elementos que tengan el atributo visit diferente de 0
 		v = limpiar(v);
+		/*
+		cout << "circle2 " << v.size() << endl;
+		for (int i = 0; i < v.size(); i++)
+			circle(image3, Point2f(v[i].cx, v[i].cy), 1, Scalar(255, 255, 255));
+		imshow("circle2 ", image3);
+		*/
 
 		// Tenemos los centros de varios contornos y debemos quedarnos con los 30 del patron
 		// La observacion esta en que la distancia entre cada centro del patron es pequeña
 		// Por lo tanto dado una distancia debemos encontrar el tamaño maximo de las componentes conexas formadas (este debe ser 30)
 		// Si una distancia es pequenha entonces la componente tendra tamanho 1 si es muy grande el tamanho sera el total de nodos.
 		// Por lo tanto aplicamos binary search para encontrar la minima distancia de tal modo que la componente conexa mas grande sea 44 - tablero
-		double lo = 1; double hi = 2000;
+		double lo = 1; double hi = 60;
+		if (imageSize.width > 700)hi = 120;
+
+		
 		vector<nodo>aux;
-		for (int it = 0; it < 30; it++){
+		for (int it = 0; it < 20; it++){
 			double me = (lo + hi) / 2;
 			memset(visited, 0, sizeof(visited));
 			int maxi = 0;
@@ -488,6 +533,7 @@ int main(){
 			}
 		}
 
+
 		memset(visited, 0, sizeof(visited));
 		// aqui solo recuperamos el vector con los 30 puntos deseados
 		for (int i = 0; i < v.size(); i++){
@@ -501,6 +547,7 @@ int main(){
 		}
 
 		v = aux;
+		cout << "loooo " << lo <<" "<<v.size()<< endl;
 
 		// dibujamos los contornos que solo corresponden al tablero de anillos (total 30)
 		for (int i = 0; i < v.size(); i++)
@@ -513,6 +560,7 @@ int main(){
 
 		//El tablero es de 5X6
 		Size boardSize(5, 6);
+		//cout << "elementos= " << v.size() << endl;
 
 		// en caso de que se haya filtrado los 30 elementos correctamente hacer lo siguiente
 		if (v.size() == 30){
@@ -610,9 +658,10 @@ int main(){
 				}
 
 
-			cout << "numFrame: " << numframe << " " << posframe << " " << frames.size() << endl;
+			//cout << "numFrame: " << numframe << " " << posframe << " " << frames.size() << endl;
 			if (nombrevideo == "medir_1280x720_anillos.wmv" || nombrevideo == "medir_640x360_anillos.wmv"){
 				distancia(original, pointBuf2);
+				numframe++;
 			}
 			else{
 				/**/
@@ -626,7 +675,7 @@ int main(){
 					runCalibrationAndSave(original, imageSize, cameraMatrix, distCoeffs, imagePoints);
 					break;
 				}
-
+				
 				/*
 				double error = runCalibrationAndSave(original, imageSize, cameraMatrix, distCoeffs, vector<vector<Point2f> >(1, pointBuf2));
 				cout << "error " << error << endl;
@@ -648,6 +697,12 @@ int main(){
 	myfile << "errores" << endl;
 	for (int i = 0; i < errorframe.size(); i++)
 		myfile << errorframe[i].first << "," << errorframe[i].second << endl;
+
+	ofstream myfiledist;
+	myfiledist.open("distancia.txt");
+	for (int i = 0; i < dist.size();i++)
+		myfiledist << dist[i] << endl;
+
 
 	return 0;
 }
