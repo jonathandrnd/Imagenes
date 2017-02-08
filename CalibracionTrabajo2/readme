@@ -53,3 +53,9 @@ Integrantes
 
 *Javier Neira
 
+----------------------------------------------------------------
+
+Mejora respecto a la presentacion 3 de Febrero.
+Correccion de las distancias de la lente al padron de circulos.
+Mejora en la deteccion de los centros de los anillos, mediante uso de la funcion adaptativethreshold
+
