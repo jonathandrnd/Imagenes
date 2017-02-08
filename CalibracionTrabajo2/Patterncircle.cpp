@@ -20,7 +20,7 @@ vector<Point>P;
 bool visited[1001];
 Size imageSize;
 Size boardSize(4, 11);
-double squareSize = 24.8;
+double squareSize = 12.4;
 string nombrevideo = "";
 
 struct nodo{
@@ -198,7 +198,6 @@ void calcBoardCornerPositions(Size boardSize, float squareSize, vector<Point3f>&
 	for (int i = 0; i < boardSize.height; i++)
 		for (int j = 0; j < boardSize.width; j++)
 			corners.push_back(Point3f(float((2 * j + i % 2)*squareSize), float(i*squareSize), 0));
-
 }
 
 bool runCalibration(Mat &view, Size& imageSize, Mat& cameraMatrix, Mat& distCoeffs,
@@ -358,8 +357,8 @@ void distancia(Mat &original, vector<Point2f> pointBuf){
 
 int main(){
 	// colocar PadronCirculos_01.avi , PadronCirculos_02.avi , PadronCirculos_03.avi calibrar_circulo_nuevo_1280x720.wmv calibrar_circulo_nuevo_640x360.wmv, medir_1280x720_circulos.wmv,medir_640x360_circulos.wmv  que son los nombres de los videos
-    nombrevideo = "medir_1280x720_circulos.wmv";
-	int cantframes = 75;
+    nombrevideo = "medir_640x360_circulos.wmv";
+	int cantframes = 25;
 
 	vector<int>frames = takeframes(nombrevideo,cantframes);// los frames a considerar para la calibracion
 	//vector<int>frames = primeroscantframes(cantframes);
