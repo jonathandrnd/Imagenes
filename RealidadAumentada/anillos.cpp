@@ -377,7 +377,6 @@ void drawtea(){
 	glColor3f(0.5, 0.6, 0.8);
 	//glTranslatef(60.0f, 60.0f, 0.0);
 	glRotatef(-90,0, 0, 1);           // top teapot
-
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 	glEnable(GL_DEPTH_TEST);
@@ -396,22 +395,59 @@ void drawtea(){
 	//glutSwapBuffers();
 }
 
+GLuint texture[2];
+
+const GLfloat light_ambient[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+const GLfloat light_diffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+const GLfloat light_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+const GLfloat light_position[] = { 2.0f, 5.0f, 5.0f, 0.0f };
+
+const GLfloat mat_ambient[] = { 0.7f, 0.7f, 0.7f, 1.0f };
+const GLfloat mat_diffuse[] = { 0.8f, 0.8f, 0.8f, 1.0f };
+const GLfloat mat_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+const GLfloat high_shininess[] = { 100.0f };
+
 void drawsphere(){
+	//glColor3f(0.5, 0.6, 0.8);
 	glPushMatrix();
-	//glScalef(1.0,-1.0,-1.0);
-	glColor3f(0.0, 0.0, 1.0);
-	for (int i = 0; i<6; i++){
-		for (int j = 0; j<8; j++){
-			glPushMatrix();
-			glTranslatef(j*1.0, 0.0, 0.0);
-			glutSolidSphere(0.5, 2, 2);
-			glPopMatrix();
-		}
-		glTranslatef(0.0, 1.0, 0.0);
-		glFlush();
-	}
+
+	//glClearColor(1, 1, 1, 1);
+	
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_LIGHT0);
+	glEnable(GL_NORMALIZE);
+	glEnable(GL_COLOR_MATERIAL);
+	glEnable(GL_LIGHTING);
+	glClear(GL_DEPTH_BUFFER_BIT);
+	
+	glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+	glMaterialfv(GL_FRONT, GL_SHININESS, high_shininess);
+	
+
+	//glScalef(25.0,25.0,25.0);
+	//glColor3f(0.0, 0.0, 1.0);
+	glTranslatef(51.8, 37.7, 0);
+	glutSolidSphere(7.6, 20, 20);
+	glBindTexture(GL_TEXTURE_2D, texture[0]);
+	//glTranslatef(0.0, 1.0, 0.0);
+
+	glDisable(GL_LIGHTING);
+	glDisable(GL_LIGHT0);
+	glDisable(GL_NORMALIZE);
+	glDisable(GL_COLOR_MATERIAL);
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_DEPTH_TEST);
 	glPopMatrix();
+
 	glFlush();
+
 }
 
 void getextrinsicparameters(Mat &cameraMatrix, Mat &distCoeffs){
@@ -846,7 +882,7 @@ void display(){
 		cv::imshow("Original Calibracion", original);
 	}
 
-	cout << "imgpoints " << imgpoints.size() << endl;
+	//cout << "imgpoints " << imgpoints.size() << endl;
 	if (imgpoints.size() != 30)return;
 
 	// clear the window
@@ -872,7 +908,7 @@ void display(){
 	////////////////// Projection Matrix ///////////////////////////////////////
 	Mat projMat = Mat::zeros(4, 4, CV_64FC1);
 	float zfar = 10000.0f, znear = 0.1f;
-	cout << cameraMatrix.at<double>(0, 0) << " " << cameraMatrix.at<double>(0, 1) << " " << cameraMatrix.at<double>(0, 2) << " " << cameraMatrix.at<double>(1, 1) << " " << cameraMatrix.at<double>(1, 2) << endl;
+	//cout << cameraMatrix.at<double>(0, 0) << " " << cameraMatrix.at<double>(0, 1) << " " << cameraMatrix.at<double>(0, 2) << " " << cameraMatrix.at<double>(1, 1) << " " << cameraMatrix.at<double>(1, 2) << endl;
 
 	projMat.at<double>(0, 0) = 2 * cameraMatrix.at<double>(0, 0) / tempimage.size().width;
 	projMat.at<double>(0, 1) = 2 * cameraMatrix.at<double>(0, 1) / tempimage.size().width;
@@ -939,10 +975,10 @@ void display(){
 	//drawAxes(1.0);		
 
 	//glScalef(1.0,-1.0,-1.0);
-	//sphere = 1;
+	sphere = 0;
 	teapot = 1;
 	
-	rook();
+	//rook();
 
 	if (teapot){
 		drawtea();
